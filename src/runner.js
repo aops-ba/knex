@@ -132,6 +132,7 @@ assign(Runner.prototype, {
       queryPromise = queryPromise.timeout(obj.timeout)
     }
 
+    global.__KNEXBADEBUG.log(obj, "runner query");
     return queryPromise
       .then((resp) => {
         const processedResponse = this.client.processResponse(resp, runner);
@@ -139,6 +140,7 @@ assign(Runner.prototype, {
         const postProcessedResponse = this.client
           .postProcessResponse(processedResponse, queryContext);
 
+        global.__KNEXBADEBUG.log(obj, "emitting query-response");
         this.builder.emit(
           'query-response',
           postProcessedResponse,

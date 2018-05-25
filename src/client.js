@@ -139,6 +139,8 @@ assign(Client.prototype, {
     debugQuery(obj.sql, __knexTxId)
     debugBindings(obj.bindings, __knexTxId)
 
+    global.__KNEXBADEBUG.log(obj, "just emitted query");
+
     obj.sql = this.positionBindings(obj.sql);
 
     return this._query(connection, obj).catch((err) => {
@@ -157,6 +159,8 @@ assign(Client.prototype, {
     this.emit('query', assign({__knexUid, __knexTxId}, obj))
     debugQuery(obj.sql, __knexTxId)
     debugBindings(obj.bindings, __knexTxId)
+
+    global.__KNEXBADEBUG.log(obj, "just emitted query (stream)");
 
     obj.sql = this.positionBindings(obj.sql);
 
@@ -295,6 +299,7 @@ assign(Client.prototype, {
     return Promise
       .try(() => this.pool.acquire().promise)
       .tap(connection => {
+        global.__KNEXBADEBUG.log(connection.__knexUid, "knex conn acquired");
         debug('acquired connection from pool: %s', connection.__knexUid)
       })
       .catch(TimeoutError, () => {
@@ -308,6 +313,7 @@ assign(Client.prototype, {
   // Releases a connection back to the connection pool,
   // returning a promise resolved when the connection is released.
   releaseConnection(connection) {
+    global.__KNEXBADEBUG.log(connection.__knexUid, "knex conn release");
     debug('releasing connection to pool: %s', connection.__knexUid)
     const didRelease = this.pool.release(connection)
 

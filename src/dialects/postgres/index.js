@@ -220,8 +220,11 @@ assign(Client_PG.prototype, {
   _query(connection, obj) {
     let sql = obj.sql;
     if (obj.options) sql = extend({text: sql}, obj.options);
+    sql.__knexQueryUid = obj.__knexQueryUid;
     return new Promise(function(resolver, rejecter) {
+      global.__KNEXBADEBUG.log(obj, "about to connection.query");
       connection.query(sql, obj.bindings, function(err, response) {
+        global.__KNEXBADEBUG.log(obj, "finished connection.query");
         if (err) return rejecter(err);
         obj.response = response;
         resolver(obj);
